@@ -395,43 +395,9 @@ function fireConfetti() {
   setTimeout(() => container.remove(), 4000);
 }
 
-// ── REPLENISH FROM CLAUDE API ─────────────────────────────────────────────────
+// ── REPLENISH (disabled — 250 built-in questions) ────────────────────────────
 async function checkAndReplenish() {
-  const remaining = state.questions.length - state.currentIndex;
-  if (remaining >= 15 || state.isLoadingMore) return;
-
-  state.isLoadingMore = true;
-  $('loading-indicator').classList.remove('hidden');
-
-  try {
-    const resp = await fetch('/api/replenish', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        subject: state.selectedSubject,
-        existingIds: [...state.usedIds]
-      })
-    });
-
-    if (!resp.ok) throw new Error(`Server responded ${resp.status}`);
-    const newQs = await resp.json();
-
-    newQs.forEach((q, i) => {
-      q.id       = 10000 + Date.now() % 1000000 + i;
-      q.subject  = state.selectedSubject;
-      q.hasMap   = false;
-      q.mapState = null;
-      q.visual   = q.visual || null;
-      q.difficulty = q.difficulty || 'medium';
-    });
-
-    state.questions.push(...newQs);
-  } catch (e) {
-    // Silent fail — enough local questions to continue
-  } finally {
-    state.isLoadingMore = false;
-    $('loading-indicator').classList.add('hidden');
-  }
+  // No-op: replenishment requires ANTHROPIC_API_KEY, disabled for now.
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
