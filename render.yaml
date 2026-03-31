@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: quiz-galaxy-cbse-grade4
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ANTHROPIC_API_KEY
+        sync: false   # set manually in Render dashboard

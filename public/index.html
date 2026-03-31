@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Galaxy 🚀 — CBSE Grade 4</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════════════════════════════════════════════════
+       HOME SCREEN
+  ══════════════════════════════════════════════════ -->
+  <section id="home-screen" class="screen">
+    <span class="mascot">🚀</span>
+    <h1 class="home-title">Quiz Galaxy</h1>
+    <p class="home-subtitle">Adventure awaits, <span>Explorer</span>! 🌟</p>
+    <div class="class-badge">CBSE Grade 4 · Ages 9–10</div>
+    <br/>
+    <button class="btn-start" id="btn-start-quiz">Start Your Adventure ✨</button>
+    <div class="home-stats">
+      <div class="stat-pill"><span>5</span> Subjects</div>
+      <div class="stat-pill"><span>250+</span> Questions</div>
+      <div class="stat-pill"><span>∞</span> Replenishing</div>
+      <div class="stat-pill"><span>🏆</span> Scorecard</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       SUBJECT SELECTION SCREEN
+  ══════════════════════════════════════════════════ -->
+  <section id="subject-screen" class="screen hidden">
+    <button class="back-btn" id="back-to-home">← Back</button>
+    <div class="section-header">
+      <h2>Choose Your Subject 🎯</h2>
+      <p>Pick a topic and start your learning adventure!</p>
+    </div>
+    <div class="subjects-grid" id="subjects-grid"></div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       QUIZ SCREEN
+  ══════════════════════════════════════════════════ -->
+  <section id="quiz-screen" class="screen hidden">
+
+    <!-- Header -->
+    <div class="quiz-header">
+      <button class="back-btn" id="back-to-subjects">← Subjects</button>
+      <span class="subject-label" id="subject-label">Science</span>
+      <div class="score-display" id="score-display">
+        <span class="score-label">SCORE</span>
+        <span id="score-value">0</span>
+      </div>
+      <div class="streak-display" id="streak-display">🔥 0 streak</div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-container">
+      <div class="progress-info">
+        <span id="progress-info-left">0 answered</span>
+        <span id="progress-info-right">50 remaining</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill science" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Question card -->
+    <div class="question-card">
+      <div class="question-meta">
+        <span id="question-num" class="question-num">Question 1</span>
+        <span id="difficulty-badge" class="difficulty-badge easy">Easy</span>
+      </div>
+
+      <!-- Timer -->
+      <div class="timer-container">
+        <div class="timer-ring">
+          <svg viewBox="0 0 70 70">
+            <circle class="bg-circle"       cx="35" cy="35" r="28"/>
+            <circle class="progress-circle" cx="35" cy="35" r="28"
+              id="timer-progress"
+              style="stroke-dasharray:175.93;stroke-dashoffset:0"/>
+          </svg>
+          <span class="timer-text" id="timer-text">15</span>
+        </div>
+      </div>
+
+      <!-- Emoji visual -->
+      <div class="question-visual" id="question-visual" style="display:none"></div>
+
+      <!-- India map (shown for geography questions) -->
+      <div class="india-map-wrapper" id="map-wrapper" style="display:none">
+        <svg id="india-map-svg" viewBox="0 0 390 420" xmlns="http://www.w3.org/2000/svg">
+
+          <!-- Overall India outline -->
+          <polygon points="
+            108,13  132,26  156,39  220,78  300,130
+            360,130 348,182 312,208 276,195 252,208
+            246,214 228,234 180,312 156,364
+            126,390 108,377 84,312  60,247
+            12,208  12,182  36,156  36,117
+            72,91   84,65   108,13
+          " fill="rgba(30,60,120,0.3)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+
+          <!-- MAJOR STATE POLYGONS (approximate) -->
+
+          <!-- Jammu & Kashmir -->
+          <path data-state="Jammu &amp; Kashmir"
+            d="M84,65 L108,13 L156,39 L156,65 L120,78 L84,65Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="110" y="48" text-anchor="middle" font-size="6" data-state="Jammu &amp; Kashmir">J&amp;K</text>
+
+          <!-- Himachal Pradesh -->
+          <path data-state="Himachal Pradesh"
+            d="M108,65 L132,65 L144,78 L120,91 L96,78 L108,65Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="120" y="78" text-anchor="middle" font-size="5" data-state="Himachal Pradesh">HP</text>
+
+          <!-- Punjab -->
+          <path data-state="Punjab"
+            d="M72,91 L96,78 L108,91 L96,104 L72,104 L72,91Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="86" y="96" text-anchor="middle" font-size="5" data-state="Punjab">PB</text>
+
+          <!-- Uttarakhand -->
+          <path data-state="Uttarakhand"
+            d="M120,78 L156,65 L168,91 L144,104 L120,91 L120,78Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="142" y="88" text-anchor="middle" font-size="5" data-state="Uttarakhand">UK</text>
+
+          <!-- Haryana + Delhi region -->
+          <path data-state="Haryana"
+            d="M72,104 L108,104 L108,117 L84,130 L72,117 L72,104Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="88" y="114" text-anchor="middle" font-size="5" data-state="Haryana">HR</text>
+
+          <!-- Delhi (small dot) -->
+          <circle cx="114" cy="117" r="5" data-state="Delhi"
+            fill="rgba(59,130,246,0.4)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+          <text x="114" y="128" text-anchor="middle" font-size="5" data-state="Delhi">DL</text>
+
+          <!-- Uttar Pradesh -->
+          <path data-state="Uttar Pradesh"
+            d="M108,104 L168,91 L204,104 L192,130 L168,143 L132,143 L108,130 L108,117 L108,104Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="156" y="122" text-anchor="middle" font-size="5.5" data-state="Uttar Pradesh">UP</text>
+
+          <!-- Rajasthan (large) -->
+          <path data-state="Rajasthan"
+            d="M36,117 L72,104 L108,117 L108,143 L84,169 L60,182 L36,169 L24,143 L36,117Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="66" y="148" text-anchor="middle" font-size="6" data-state="Rajasthan">RJ</text>
+
+          <!-- Bihar -->
+          <path data-state="Bihar"
+            d="M192,130 L228,117 L240,130 L228,156 L204,156 L192,143 L192,130Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="216" y="140" text-anchor="middle" font-size="5.5" data-state="Bihar">BR</text>
+
+          <!-- Jharkhand -->
+          <path data-state="Jharkhand"
+            d="M204,156 L240,143 L252,169 L240,182 L216,182 L204,169 L204,156Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="228" y="168" text-anchor="middle" font-size="5" data-state="Jharkhand">JH</text>
+
+          <!-- West Bengal -->
+          <path data-state="West Bengal"
+            d="M252,156 L276,143 L288,169 L276,195 L252,208 L240,182 L252,156Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="264" y="178" text-anchor="middle" font-size="5" data-state="West Bengal">WB</text>
+
+          <!-- Assam -->
+          <path data-state="Assam"
+            d="M300,143 L336,130 L348,156 L324,169 L300,156 L300,143Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="318" y="150" text-anchor="middle" font-size="5.5" data-state="Assam">AS</text>
+
+          <!-- Sikkim (tiny) -->
+          <circle cx="264" cy="143" r="6" data-state="Sikkim"
+            fill="rgba(59,130,246,0.3)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="264" y="143" text-anchor="middle" font-size="4.5" data-state="Sikkim">SK</text>
+
+          <!-- MP (large, central) -->
+          <path data-state="Madhya Pradesh"
+            d="M84,156 L132,143 L192,143 L192,169 L168,195 L132,208 L96,195 L84,169 L84,156Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="138" y="178" text-anchor="middle" font-size="6" data-state="Madhya Pradesh">MP</text>
+
+          <!-- Chhattisgarh -->
+          <path data-state="Chhattisgarh"
+            d="M192,156 L216,156 L240,182 L228,208 L204,221 L180,208 L168,195 L192,169 L192,156Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="204" y="192" text-anchor="middle" font-size="5" data-state="Chhattisgarh">CG</text>
+
+          <!-- Odisha -->
+          <path data-state="Odisha"
+            d="M216,195 L240,182 L252,208 L246,234 L228,247 L204,234 L204,221 L216,195Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="226" y="220" text-anchor="middle" font-size="5.5" data-state="Odisha">OD</text>
+
+          <!-- Gujarat -->
+          <path data-state="Gujarat"
+            d="M12,182 L36,169 L60,182 L72,208 L60,234 L36,247 L12,234 L12,208 L12,182Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="40" y="212" text-anchor="middle" font-size="6" data-state="Gujarat">GJ</text>
+
+          <!-- Maharashtra (large) -->
+          <path data-state="Maharashtra"
+            d="M60,195 L132,208 L168,221 L156,260 L120,273 L84,260 L60,247 L60,221 L60,195Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="112" y="238" text-anchor="middle" font-size="6" data-state="Maharashtra">MH</text>
+
+          <!-- Telangana -->
+          <path data-state="Telangana"
+            d="M156,247 L180,234 L204,247 L192,273 L168,286 L156,273 L156,247Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="178" y="263" text-anchor="middle" font-size="5" data-state="Telangana">TS</text>
+
+          <!-- Andhra Pradesh -->
+          <path data-state="Andhra Pradesh"
+            d="M156,260 L192,260 L216,260 L228,286 L204,312 L180,312 L156,299 L156,273 L168,286 L156,260Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="192" y="288" text-anchor="middle" font-size="5.5" data-state="Andhra Pradesh">AP</text>
+
+          <!-- Goa (small) -->
+          <circle cx="84" cy="286" r="6" data-state="Goa"
+            fill="rgba(59,130,246,0.4)" stroke="rgba(255,255,255,0.35)" stroke-width="0.8"/>
+          <text x="84" y="300" text-anchor="middle" font-size="4.5" data-state="Goa">GA</text>
+
+          <!-- Karnataka -->
+          <path data-state="Karnataka"
+            d="M84,260 L120,260 L156,273 L156,312 L132,325 L96,312 L84,286 L84,260Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="118" y="293" text-anchor="middle" font-size="5.5" data-state="Karnataka">KA</text>
+
+          <!-- Kerala -->
+          <path data-state="Kerala"
+            d="M96,325 L120,312 L132,338 L126,377 L108,377 L96,351 L96,325Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="112" y="348" text-anchor="middle" font-size="5.5" data-state="Kerala">KL</text>
+
+          <!-- Tamil Nadu -->
+          <path data-state="Tamil Nadu"
+            d="M132,325 L156,312 L180,325 L168,364 L156,390 L126,390 L126,377 L132,338 L132,325Z"
+            fill="rgba(59,130,246,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+          <text x="152" y="354" text-anchor="middle" font-size="5.5" data-state="Tamil Nadu">TN</text>
+
+          <!-- State abbreviation legend -->
+          <text x="195" y="413" text-anchor="middle" font-size="5" fill="rgba(255,255,255,0.3)">Simplified India Map — highlighted state is quiz-relevant</text>
+        </svg>
+      </div>
+
+      <!-- Question text -->
+      <p class="question-text" id="question-text">Loading question...</p>
+    </div>
+
+    <!-- Answer buttons -->
+    <div class="answers-grid" id="answers-grid"></div>
+
+    <!-- Trivia reveal -->
+    <div class="trivia-card hidden" id="trivia-card">
+      <span class="trivia-icon">💡</span>
+      <p class="trivia-text" id="trivia-text"></p>
+    </div>
+
+    <!-- Loading more questions -->
+    <div class="loading-indicator hidden" id="loading-indicator">
+      🌐 Loading more questions from the internet…
+    </div>
+
+    <!-- Next button -->
+    <button class="btn-next hidden science" id="btn-next">Next Question →</button>
+
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       RESULT SCREEN
+  ══════════════════════════════════════════════════ -->
+  <section id="result-screen" class="screen hidden">
+    <span class="result-trophy" id="result-trophy">🏆</span>
+    <h2 class="result-message" id="result-message">Outstanding Explorer!</h2>
+
+    <div class="result-score-card">
+      <div class="big-score" id="result-big-score">0<span>/0</span></div>
+      <p class="result-accuracy" id="result-accuracy">0% Accuracy</p>
+
+      <div class="result-stats">
+        <div class="result-stat">
+          <div class="result-stat-value" id="result-correct">0</div>
+          <div class="result-stat-label">Correct</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-value" id="result-streak">0</div>
+          <div class="result-stat-label">Best Streak</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-value" id="result-time">0m 0s</div>
+          <div class="result-stat-label">Total Time</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-buttons">
+      <button class="btn-action primary" id="btn-play-again">🔄 Play Again</button>
+      <button class="btn-action secondary" id="btn-change-subject">🎯 Change Subject</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="questions.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
