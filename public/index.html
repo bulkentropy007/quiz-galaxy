@@ -21,8 +21,8 @@
     <button class="btn-start" id="btn-start-quiz">Start Your Adventure ✨</button>
     <div class="home-stats">
       <div class="stat-pill"><span>5</span> Subjects</div>
-      <div class="stat-pill"><span>250+</span> Questions</div>
-      <div class="stat-pill"><span>∞</span> Replenishing</div>
+      <div class="stat-pill"><span>700</span> Questions</div>
+      <div class="stat-pill"><span>18</span> Mini Quizzes</div>
       <div class="stat-pill"><span>🏆</span> Scorecard</div>
     </div>
   </section>
@@ -37,6 +37,18 @@
       <p>Pick a topic and start your learning adventure!</p>
     </div>
     <div class="subjects-grid" id="subjects-grid"></div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       QUIZ TYPE SELECTION SCREEN
+  ══════════════════════════════════════════════════ -->
+  <section id="quiz-type-screen" class="screen hidden">
+    <button class="back-btn" id="back-to-subjects-from-type">← Subjects</button>
+    <div class="section-header">
+      <h2 id="quiz-type-heading">Choose Quiz Type 🎮</h2>
+      <p id="quiz-type-subheading">Full quiz or a quick mini challenge?</p>
+    </div>
+    <div class="quiz-types-grid" id="quiz-types-grid"></div>
   </section>
 
   <!-- ══════════════════════════════════════════════════
@@ -264,11 +276,6 @@
       <p class="trivia-text" id="trivia-text"></p>
     </div>
 
-    <!-- Loading more questions -->
-    <div class="loading-indicator hidden" id="loading-indicator">
-      🌐 Loading more questions from the internet…
-    </div>
-
     <!-- Next button -->
     <button class="btn-next hidden science" id="btn-next">Next Question →</button>
 
@@ -310,6 +317,7 @@
 </div>
 
 <script src="questions.js"></script>
+<script src="mini_quizzes.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@
 const state = {
   currentScreen: 'home',
   selectedSubject: null,
+  selectedMiniSet: null,
   questions: [],
   currentIndex: 0,
   score: 0,
@@ -15,13 +16,45 @@ const state = {
   timerInterval: null,
   answered: false,
   usedIds: new Set(),
-  isLoadingMore: false,
   startTime: null,
-  totalElapsed: 0
+  totalElapsed: 0,
+  quizLimit: 50
 };
 
 const TIMER_MAX = 45;
 const CIRCUMFERENCE = 2 * Math.PI * 28; // r=28
+
+// ── MINI QUIZ CONFIG ─────────────────────────────────────────────────────────
+const MINI_QUIZ_CONFIG = {
+  science: [
+    { set: 'science_1', label: 'Mini Quiz 1', desc: 'Senses, Health & Nutrition' },
+    { set: 'science_2', label: 'Mini Quiz 2', desc: 'Matter, Energy & Environment' }
+  ],
+  geography: [
+    { set: 'geography_1', label: 'Mini Quiz 1', desc: 'India States & Landmarks' },
+    { set: 'geography_2', label: 'Mini Quiz 2', desc: 'World Geography' }
+  ],
+  history: [
+    { set: 'history_1', label: 'Mini Quiz 1', desc: 'Ancient & Medieval India' },
+    { set: 'history_2', label: 'Mini Quiz 2', desc: 'Modern India & Culture' }
+  ],
+  mathematics: [
+    { set: 'mathematics_1',  label: 'Mini Quiz 1',  desc: 'Large Numbers & Place Value' },
+    { set: 'mathematics_2',  label: 'Mini Quiz 2',  desc: 'Addition & Subtraction' },
+    { set: 'mathematics_3',  label: 'Mini Quiz 3',  desc: 'Multiplication' },
+    { set: 'mathematics_4',  label: 'Mini Quiz 4',  desc: 'Division' },
+    { set: 'mathematics_5',  label: 'Mini Quiz 5',  desc: 'Fractions & Decimals' },
+    { set: 'mathematics_6',  label: 'Mini Quiz 6',  desc: 'Geometry' },
+    { set: 'mathematics_7',  label: 'Mini Quiz 7',  desc: 'Measurement & Time' },
+    { set: 'mathematics_8',  label: 'Mini Quiz 8',  desc: 'Money' },
+    { set: 'mathematics_9',  label: 'Mini Quiz 9',  desc: 'Patterns & Number Theory' },
+    { set: 'mathematics_10', label: 'Mini Quiz 10', desc: 'Word Problems' }
+  ],
+  gk: [
+    { set: 'gk_1', label: 'Mini Quiz 1', desc: 'India: Symbols & Culture' },
+    { set: 'gk_2', label: 'Mini Quiz 2', desc: 'World GK & Science' }
+  ]
+};
 
 // ── SUBJECT CONFIG ──────────────────────────────────────────────────────────
 const SUBJECT_CONFIG = {
@@ -42,7 +75,7 @@ const el = (tag, cls, html) => {
 };
 
 function showScreen(name) {
-  ['home', 'subject', 'quiz', 'result'].forEach(s => {
+  ['home', 'subject', 'quiz-type', 'quiz', 'result'].forEach(s => {
     const scr = $(`${s}-screen`);
     if (scr) scr.classList.toggle('hidden', s !== name);
   });
@@ -60,10 +93,17 @@ function goSubjectSelect() {
   showScreen('subject');
 }
 
+function goQuizTypeSelect(subject) {
+  state.selectedSubject = subject;
+  buildQuizTypeScreen(subject);
+  showScreen('quiz-type');
+}
+
 // ── INIT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   buildHomeScreen();
   buildSubjectScreen();
+  buildQuizTypeScreenNav();
   buildQuizScreen();
   buildResultScreen();
   showScreen('home');
@@ -87,7 +127,47 @@ function buildSubjectScreen() {
       <p>${cfg.desc}</p>
       <span class="subject-badge">50+ Questions</span>
     `;
-    card.addEventListener('click', () => startQuiz(key));
+    card.addEventListener('click', () => goQuizTypeSelect(key));
+    grid.appendChild(card);
+  });
+}
+
+// ── QUIZ TYPE SCREEN ─────────────────────────────────────────────────────────
+function buildQuizTypeScreenNav() {
+  $('back-to-subjects-from-type').addEventListener('click', goSubjectSelect);
+}
+
+function buildQuizTypeScreen(subject) {
+  const cfg = SUBJECT_CONFIG[subject];
+  const subjectName = key => key.charAt(0).toUpperCase() + key.slice(1);
+  $('quiz-type-heading').textContent = `${cfg.icon} ${subjectName(subject)} — Choose Type`;
+  $('quiz-type-subheading').textContent = 'Full quiz (50 Qs) or a focused mini challenge (25 Qs)?';
+
+  const grid = $('quiz-types-grid');
+  grid.innerHTML = '';
+
+  // Full quiz card
+  const fullCard = el('div', 'quiz-type-card full-quiz');
+  fullCard.innerHTML = `
+    <span class="quiz-type-icon">🏆</span>
+    <h3>Full Quiz</h3>
+    <p>50 questions · All topics<br>Score up to 750 points</p>
+    <span class="quiz-type-badge">Classic Mode</span>
+  `;
+  fullCard.addEventListener('click', () => startQuiz(subject, null));
+  grid.appendChild(fullCard);
+
+  // Mini quiz cards
+  const miniSets = MINI_QUIZ_CONFIG[subject] || [];
+  miniSets.forEach(mini => {
+    const card = el('div', 'quiz-type-card mini-quiz');
+    card.innerHTML = `
+      <span class="quiz-type-icon">⚡</span>
+      <h3>${mini.label}</h3>
+      <p>${mini.desc}<br>25 questions</p>
+      <span class="quiz-type-badge">Mini Challenge</span>
+    `;
+    card.addEventListener('click', () => startQuiz(subject, mini.set));
     grid.appendChild(card);
   });
 }
@@ -96,15 +176,27 @@ function buildSubjectScreen() {
 function buildQuizScreen() {
   $('back-to-subjects').addEventListener('click', () => {
     clearTimer();
-    goSubjectSelect();
+    if (state.selectedSubject) {
+      buildQuizTypeScreen(state.selectedSubject);
+      showScreen('quiz-type');
+    } else {
+      goSubjectSelect();
+    }
   });
   $('btn-next').addEventListener('click', nextQuestion);
 }
 
 // ── START QUIZ ───────────────────────────────────────────────────────────────
-function startQuiz(subject) {
+function startQuiz(subject, miniSet) {
   state.selectedSubject = subject;
-  state.questions = window.QUESTIONS.filter(q => q.subject === subject);
+  state.selectedMiniSet = miniSet || null;
+  state.quizLimit = miniSet ? 25 : 50;
+
+  if (miniSet) {
+    state.questions = window.MINI_QUESTIONS.filter(q => q.miniSet === miniSet);
+  } else {
+    state.questions = window.QUESTIONS.filter(q => q.subject === subject);
+  }
   shuffleArray(state.questions);
   state.currentIndex = 0;
   state.score = 0;
@@ -124,7 +216,6 @@ function startQuiz(subject) {
 
   showScreen('quiz');
   renderQuestion();
-  checkAndReplenish();
 }
 
 // ── RENDER QUESTION ──────────────────────────────────────────────────────────
@@ -177,11 +268,10 @@ function renderQuestion() {
   $('btn-next').classList.add('hidden');
 
   // Progress
-  const total = state.questions.length;
-  const pct = Math.min((state.totalAnswered / Math.min(total, 50)) * 100, 100);
+  const pct = Math.min((state.totalAnswered / state.quizLimit) * 100, 100);
   $('progress-fill').style.width = pct + '%';
   $('progress-info-left').textContent = `${state.totalAnswered} answered`;
-  $('progress-info-right').textContent = `${Math.min(total, 50) - state.totalAnswered} remaining`;
+  $('progress-info-right').textContent = `${state.quizLimit - state.totalAnswered} remaining`;
 
   // Timer
   startTimer();
@@ -221,9 +311,6 @@ function handleAnswer(selected) {
   showTrivia(q.trivia);
   $('btn-next').classList.remove('hidden');
 
-  if (state.totalAnswered % 10 === 0 || state.questions.length - state.currentIndex < 12) {
-    checkAndReplenish();
-  }
 }
 
 // ── TIMER ─────────────────────────────────────────────────────────────────────
@@ -281,7 +368,7 @@ function timeOut() {
 
 // ── NEXT QUESTION ─────────────────────────────────────────────────────────────
 function nextQuestion() {
-  if (state.totalAnswered >= 50) { showResult(); return; }
+  if (state.totalAnswered >= state.quizLimit) { showResult(); return; }
   state.currentIndex++;
   if (state.currentIndex >= state.questions.length) {
     showResult();
@@ -395,10 +482,6 @@ function fireConfetti() {
   setTimeout(() => container.remove(), 4000);
 }
 
-// ── REPLENISH (disabled — 250 built-in questions) ────────────────────────────
-async function checkAndReplenish() {
-  // No-op: replenishment requires ANTHROPIC_API_KEY, disabled for now.
-}
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function shuffleArray(arr) {

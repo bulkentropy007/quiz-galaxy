@@ -7,5 +7,3 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: ANTHROPIC_API_KEY
-        sync: false   # set manually in Render dashboard
