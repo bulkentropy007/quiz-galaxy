@@ -121,11 +121,14 @@ function buildSubjectScreen() {
   Object.entries(SUBJECT_CONFIG).forEach(([key, cfg]) => {
     const card = el('div', 'subject-card');
     card.dataset.subject = key;
+    const fullCount = window.QUESTIONS.filter(q => q.subject === key).length;
+    const miniCount = window.MINI_QUESTIONS.filter(q => q.subject === key).length;
+    const totalCount = fullCount + miniCount;
     card.innerHTML = `
       <span class="subject-icon">${cfg.icon}</span>
       <h3>${cfg.icon.replace(/\s/g,'')} ${key.charAt(0).toUpperCase() + key.slice(1)}</h3>
       <p>${cfg.desc}</p>
-      <span class="subject-badge">50+ Questions</span>
+      <span class="subject-badge">${totalCount} Questions</span>
     `;
     card.addEventListener('click', () => goQuizTypeSelect(key));
     grid.appendChild(card);
